@@ -1,0 +1,9 @@
+@import url('line-awesome/dist/line-awesome/css/line-awesome.min.css');
+@import url('@fontsource/exo-2');    html {
+      --lumo-primary-color: hsl(214, 67%, 47%);
+      --lumo-primary-color-50pct: hsla(214, 67%, 47%, 0.5);
+      --lumo-primary-color-10pct: hsla(214, 67%, 47%, 0.1);
+      --lumo-border-radius: calc(var(--lumo-size-m) / 2);
+--lumo-font-family: Exo 2;
+
+    }
