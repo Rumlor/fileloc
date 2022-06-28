@@ -45,6 +45,7 @@ public class FileUploadComponent extends VerticalLayout {
         fileUploader.setMaxFiles(1);
         //in bytes . equals 512 MBs.
         fileUploader.setMaxFileSize(512*1024*1024);
+        //upload listener. extra event listeners will be added.
         fileUploader.setReceiver(uiListener.uploadFileEventListener(uploadedFileDirectory));
     }
 

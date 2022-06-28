@@ -11,6 +11,5 @@ public class Directory {
     @NotBlank
     private String rootDir;
     private String subDir;
-    @NotBlank
-    private String file;
+
 }

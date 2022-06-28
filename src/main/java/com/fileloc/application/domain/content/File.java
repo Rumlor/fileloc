@@ -2,6 +2,7 @@ package com.fileloc.application.domain.content;
 
 
 import com.fileloc.application.domain.ApplicationBaseEntity;
+import lombok.Data;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -10,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
 
 @Entity
+@Data
 public class File extends ApplicationBaseEntity {
 
     @Basic(optional = false)
@@ -21,7 +23,8 @@ public class File extends ApplicationBaseEntity {
     private boolean isFileLocked;
 
     @NotBlank
-    private String createdUser;
+    private String createdUserName;
+
 
 
 }
