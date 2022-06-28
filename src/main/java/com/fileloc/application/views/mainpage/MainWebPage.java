@@ -1,5 +1,6 @@
 package com.fileloc.application.views.mainpage;
 
+import com.fileloc.application.applicationconstants.FileSystemConstants;
 import com.fileloc.application.views.uploadsection.FileUploadComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
@@ -20,7 +21,7 @@ public class MainWebPage extends VerticalLayout {
     }
 
     private static File fileSystemManagerUtility(){
-        File file = new File("filestor");
+        File file = new File(FileSystemConstants.ROOT_DIR);
         return file.exists() ? file : createDir(file);
     }
 
