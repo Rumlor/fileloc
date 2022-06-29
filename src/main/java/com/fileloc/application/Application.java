@@ -11,9 +11,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class,
-        DataSourceTransactionManagerAutoConfiguration.class,
-        HibernateJpaAutoConfiguration.class})
+@SpringBootApplication
 @NpmPackage(value = "@fontsource/exo-2", version = "4.5.0")
 @Theme(value = "fileloc")
 @PWA(name = "FileLoc", shortName = "FileLoc", offlineResources = {})
