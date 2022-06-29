@@ -1,0 +1,10 @@
+app:
+  data:
+    driver: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/fileservedb?allowPublicKeyRetrieval=true&useSSL=false
+    username : webappgeneraluser
+    password: 3512344
+    generateddl: true
+    showsql : true
+    databaseplatform: org.hibernate.dialect.MySQL5Dialect
+    ddlauto : update
