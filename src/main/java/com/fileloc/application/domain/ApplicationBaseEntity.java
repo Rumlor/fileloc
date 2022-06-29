@@ -2,9 +2,7 @@ package com.fileloc.application.domain;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -12,7 +10,8 @@ import java.util.UUID;
 public abstract class ApplicationBaseEntity {
 
     @Id
-    private UUID id = UUID.randomUUID();
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @CreationTimestamp
     private LocalDateTime creationTime;

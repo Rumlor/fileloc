@@ -1,5 +1,6 @@
 package com.fileloc.application.views.uploadsection;
 
+import com.fileloc.application.appservices.contracts.FileOutputHandler;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
@@ -18,10 +19,14 @@ public class FileUploadComponent extends VerticalLayout {
     private Span errorField;
     private  UiListener uiListener;
 
+    /**File directory to be populated by upload component.**/
     private File uploadedFileDirectory;
+    /**File Output operations handler. (Uploading etc.) **/
+    private FileOutputHandler fileOutputHandlerService;
 
-    public FileUploadComponent(File uploadedFileDirectory) {
+    public FileUploadComponent(File uploadedFileDirectory, FileOutputHandler fileOutputHandlerService) {
 
+        this.fileOutputHandlerService = fileOutputHandlerService;
         this.uploadedFileDirectory = uploadedFileDirectory;
         uiListener = new UiListener();
 
@@ -68,14 +73,9 @@ public class FileUploadComponent extends VerticalLayout {
 
           return  (String fileName, String mimeType) -> {
               File file = new File(uploadFileDirectory,fileName);
-              try {
-                  return new FileOutputStream(file);
-              }catch (FileNotFoundException fileNotFoundException){
-                  fileNotFoundException.printStackTrace();
-                  Notification.show("Unable to access Directory.",2000, Notification.Position.MIDDLE);
-                  return null;
-              }
+              return fileOutputHandlerService.fileOutput(file);
           };
+
       }
       private ComponentEventListener<SucceededEvent> succeededEventComponentEventListener(){
         return event -> {
