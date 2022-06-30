@@ -15,7 +15,9 @@ public class FileEntity extends ApplicationBaseEntity {
     private String fileName;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "fileDirectory")
+    @JoinColumns({
+            @JoinColumn(name = "filedir_dir"),
+            @JoinColumn(name = "filedir_path")})
     private FileDirectory fileDirectory;
 
     private boolean isFileLocked;

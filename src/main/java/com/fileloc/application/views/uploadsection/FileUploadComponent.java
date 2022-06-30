@@ -1,6 +1,7 @@
 package com.fileloc.application.views.uploadsection;
 
 import com.fileloc.application.appservices.contracts.FileOutputHandler;
+import com.fileloc.application.views.mainpage.MainWebPage;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
@@ -24,10 +25,13 @@ public class FileUploadComponent extends VerticalLayout {
     /**File Output operations handler. (Uploading etc.) **/
     private FileOutputHandler fileOutputHandlerService;
 
-    public FileUploadComponent(File uploadedFileDirectory, FileOutputHandler fileOutputHandlerService) {
+    /**Reference parent component to refresh list after succesfull file upload**/
+    private MainWebPage parentMainWebPage;
+    public FileUploadComponent(File uploadedFileDirectory, FileOutputHandler fileOutputHandlerService,MainWebPage mainWebPage) {
 
         this.fileOutputHandlerService = fileOutputHandlerService;
         this.uploadedFileDirectory = uploadedFileDirectory;
+        this.parentMainWebPage = mainWebPage;
         uiListener = new UiListener();
 
         setUploaderUIAttributes();
@@ -72,8 +76,12 @@ public class FileUploadComponent extends VerticalLayout {
       private MultiFileReceiver uploadFileEventListener(File uploadFileDirectory){
 
           return  (String fileName, String mimeType) -> {
-              File file = new File(uploadFileDirectory,fileName);
-              return fileOutputHandlerService.fileOutput(file);
+              try {
+                  File file = new File(uploadFileDirectory,fileName);
+                  return fileOutputHandlerService.fileOutput(file);
+              }finally {
+                  parentMainWebPage.fillFileListWithFiles();
+              }
           };
 
       }
@@ -83,6 +91,8 @@ public class FileUploadComponent extends VerticalLayout {
             Notification.show(event.getFileName().concat(" Successfully Uploaded"),5000, Notification.Position.MIDDLE);
         };
       }
+
+
 
     }
 

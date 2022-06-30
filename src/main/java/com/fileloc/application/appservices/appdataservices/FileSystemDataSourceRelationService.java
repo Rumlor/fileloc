@@ -22,7 +22,6 @@ public class FileSystemDataSourceRelationService
 
     @Override
     public void persistFileInformationToStorage(File fileToBePersisted) {
-
         FileEntity file = new FileEntity();
         FileDirectory fileDirectory = new FileDirectory();
 
