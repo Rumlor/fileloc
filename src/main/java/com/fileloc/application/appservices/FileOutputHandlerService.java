@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 @Component
 @Slf4j
@@ -21,12 +22,14 @@ public class FileOutputHandlerService implements FileOutputHandler {
 
             try {
                 FileOutputStream fileOutputStream =new FileOutputStream(file);
-                //persist file specific info to database
-                fileSystemDataSourceRelation.persistFileInformationToStorage(file);
                 return fileOutputStream;
             }catch (FileNotFoundException fileNotFoundException){
                 log.info("File {} could not be found.",file.getName());
-            };
+            }finally {
+                fileSystemDataSourceRelation.persistFileInformationToStorage(file);
+            }
+
+
         return null;
     }
 }

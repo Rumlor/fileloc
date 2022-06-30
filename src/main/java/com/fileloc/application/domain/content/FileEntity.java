@@ -14,16 +14,18 @@ public class FileEntity extends ApplicationBaseEntity {
     @Basic(optional = false)
     private String fileName;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false,cascade = {CascadeType.MERGE})
     @JoinColumns({
-            @JoinColumn(name = "filedir_dir"),
-            @JoinColumn(name = "filedir_path")})
+            @JoinColumn(name = "filedir_dir",referencedColumnName = "dir")})
     private FileDirectory fileDirectory;
 
     private boolean isFileLocked;
 
     @NotBlank
     private String createdUserName;
+
+    @NotBlank
+    private String fileSize;
 
 
 

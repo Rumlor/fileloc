@@ -10,6 +10,9 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 
+
+
+/**For composite key , additional fields will be added.**/
 @Embeddable
 @Data
 @Builder
@@ -18,8 +21,7 @@ public class Directory implements Serializable {
 
     @NotBlank
     private String containingDirectory;
-    @NotBlank
-    private String fullPath;
+
 
 
     public Directory() {
@@ -31,11 +33,11 @@ public class Directory implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Directory directory = (Directory) o;
-        return containingDirectory.equals(directory.containingDirectory) && fullPath.equals(directory.fullPath);
+        return Objects.equals(containingDirectory, directory.containingDirectory);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(containingDirectory, fullPath);
+        return Objects.hash(containingDirectory);
     }
 }

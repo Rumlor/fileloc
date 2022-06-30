@@ -9,23 +9,40 @@ import com.fileloc.application.domain.content.FileEntity;
 import com.fileloc.application.views.UIComponentGenericStyler;
 import com.fileloc.application.views.downloadsection.FileDownloadComponent;
 import com.fileloc.application.views.uploadsection.FileUploadComponent;
-import com.vaadin.flow.component.AbstractField;
-import com.vaadin.flow.component.HasSize;
-import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
+import com.vaadin.flow.component.grid.contextmenu.GridMenuItem;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
+import com.vaadin.flow.server.VaadinServletService;
+import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.server.frontend.installer.DefaultFileDownloader;
+import org.apache.catalina.webresources.FileResource;
+import org.apache.commons.io.FileUtils;
+import org.aspectj.weaver.StandardAnnotation;
+import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.stream.Stream;
 
 @PageTitle("FileL@ck")
 @Route(value = "")
 public class MainWebPage extends VerticalLayout {
 
-
+    private Anchor anchor;
     private FileUploadComponent fileUploadComponent;
 
     private FileDownloadComponent fileDownloadComponent;
@@ -35,6 +52,8 @@ public class MainWebPage extends VerticalLayout {
     private FileInputHandler fileInputHandlerService;
 
     private final FileQueryingService fileQueryingService;
+
+    private  GridContextMenu<FileEntity> fileListContext;
     private static final UIPlumber uiPlumber = new UIPlumber();
 
     private Grid<FileEntity> fileList = new Grid<>(FileEntity.class);
@@ -54,24 +73,66 @@ public class MainWebPage extends VerticalLayout {
         this.fileOutputHandlerService = fileOutputHandlerService;
         this.fileInputHandlerService = fileInputHandlerService;
         this.fileQueryingService = fileQueryingService;
-
+        this.fileUploadComponent = new FileUploadComponent(fileSystemManagerUtility(),fileOutputHandlerService,this);
         //grid fileList is configured
         configureFileGrid();
+        configureFileUpload();
+        configureContextMenu();
         fillFileListWithFiles();
 
         //create or get file from service.
-        fileUploadComponent = new FileUploadComponent(fileSystemManagerUtility(),fileOutputHandlerService,this);
+
         add(fileList,fileUploadComponent);
     }
 
+    /**FILE UPLOAD COMPONENT**/
+    private void configureFileUpload() {
+        fileUploadComponent.setSizeFull();
+    }
+
+    /**CONTEXT MENU.**/
+    private void configureContextMenu() {
+        fileListContext = fileList.addContextMenu();
+        fileListContext.setOpenOnClick(true);
+        fileListContext.addItem("Download",new UIListener().fileDownloadRequestListener());
+    }
+
+    /**GET ACTIVE FILE DIR.**/
     private  File fileSystemManagerUtility(){
        return fileHandlerService.getActiveFileFromHandlerService();
     }
 
+    /**FILE GRID CONFIG.**/
+    private void configureFileGrid(){
+        fileList.setColumns("fileName","createdUserName");
+        fileList.addColumn(column->Boolean.valueOf(column.isFileLocked()).toString()).setHeader("File Locked?");
+        fileList.addColumn(column->column.getCreationTime().toString()).setHeader("Creation Time");
+        fileList.addColumn(column->column.getFileDirectory().getFileLocation().getContainingDirectory()).setHeader("File Path");
+        fileList.addColumn(column->column.getFileSize()).setHeader("File Size");
+        fileList.getColumns().forEach(fileEntityColumn -> fileEntityColumn.setAutoWidth(true));
+    }
+
+    /**LOAD FILES FROM DB.**/
+    public void fillFileListWithFiles(){
+        fileList.setItems(fileQueryingService.findAllFilesFromDB());
+    }
 
 
 
-  /**Nested Helper class to handle ui configurations. sole purpose of nesting this class is method grouping.**/
+    /**UI EVENTS.**/
+    private class UIListener{
+        private  ComponentEventListener <GridContextMenu.GridContextMenuItemClickEvent<FileEntity>>  fileDownloadRequestListener(){
+
+          return selectedFile-> {
+
+
+          };
+        }
+
+
+    }
+
+    /**UI VISUAL CONFIG.**/
     private static class UIPlumber {
 
         private <T extends HasSize> void uiMainPageStyling(T component) {
@@ -80,34 +141,6 @@ public class MainWebPage extends VerticalLayout {
 
     }
 
-    private void configureFileGrid(){
-        fileList.setColumns("fileName","createdUserName");
-        fileList.addColumn(column->Boolean.valueOf(column.isFileLocked()).toString()).setHeader("File Locked?");
-        fileList.addColumn(column->column.getCreationTime().toString()).setHeader("Creation Time");
-        fileList.addColumn(column->column.getFileDirectory().getFileLocation().getFullPath()).setHeader("File Path");
-        fileList.getColumns().forEach(fileEntityColumn -> fileEntityColumn.setAutoWidth(true));
-        //grid select listener.
-        fileList.asSingleSelect().addValueChangeListener(new UIListener().fileListCellSelectListener());
-    }
-
-    public void fillFileListWithFiles(){
-        fileList.setItems(fileQueryingService.findAllFilesFromDB());
-    }
-
-    private  class UIListener{
-
-      private HasValue.ValueChangeListener<AbstractField.ComponentValueChangeEvent< Grid<FileEntity>,FileEntity> > fileListCellSelectListener(){
-
-          return selectedFile->{
-              String fileFullPath = selectedFile.getValue().getFileDirectory().getFileLocation().getFullPath();
-              final File localFile = new File(fileFullPath);
-              fileInputHandlerService.fileInput(localFile);
-          };
-      }
-
-
-
-    }
 
 
 

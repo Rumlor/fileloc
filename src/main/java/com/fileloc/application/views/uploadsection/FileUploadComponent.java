@@ -48,14 +48,14 @@ public class FileUploadComponent extends VerticalLayout {
     }
 
     private void setUploaderUIAttributes() {
-        fileUploader = new Upload();
+
+        fileUploader = new Upload(uiListener.uploadFileEventListener(uploadedFileDirectory));
         fileUploader.setDropAllowed(true);
         fileUploader.setDropLabel(new Label("Drag and drop file here"));
         fileUploader.setMaxFiles(1);
         //in bytes . equals 512 MBs.
         fileUploader.setMaxFileSize(512*1024*1024);
         //upload listener. extra event listeners will be added.
-        fileUploader.setReceiver(uiListener.uploadFileEventListener(uploadedFileDirectory));
     }
 
     private void setUploaderUIListeners() {
@@ -73,20 +73,21 @@ public class FileUploadComponent extends VerticalLayout {
       private  ComponentEventListener<FileRejectedEvent> fileRejectedEventComponentEventListener(){
             return event -> showErrorMessage(event.getErrorMessage());
         }
-      private MultiFileReceiver uploadFileEventListener(File uploadFileDirectory){
+      private Receiver uploadFileEventListener(File uploadFileDirectory){
 
           return  (String fileName, String mimeType) -> {
               try {
                   File file = new File(uploadFileDirectory,fileName);
                   return fileOutputHandlerService.fileOutput(file);
-              }finally {
-                  parentMainWebPage.fillFileListWithFiles();
+              } catch (Exception e) {
+                  throw new RuntimeException(e);
               }
           };
 
       }
       private ComponentEventListener<SucceededEvent> succeededEventComponentEventListener(){
         return event -> {
+            parentMainWebPage.fillFileListWithFiles();
             hideErrorMessage();
             Notification.show(event.getFileName().concat(" Successfully Uploaded"),5000, Notification.Position.MIDDLE);
         };

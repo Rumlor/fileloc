@@ -20,9 +20,7 @@ public class FileDirectory  {
 
     @EmbeddedId
     @AttributeOverrides({
-    @AttributeOverride(name = "containingDirectory",column =@Column(name = "dir")),
-    @AttributeOverride(name = "fullPath",column = @Column(name = "path"))
-    })
+    @AttributeOverride(name = "containingDirectory",column =@Column(name = "dir"))})
     private Directory fileLocation;
 
 
