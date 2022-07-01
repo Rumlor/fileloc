@@ -1,6 +1,7 @@
 package com.fileloc.application.views.mainpage;
 
 import com.fileloc.application.applicationconstants.FileSystemConstants;
+import com.fileloc.application.appservices.appdataservices.FileDirectoryQueryService;
 import com.fileloc.application.appservices.appdataservices.FileQueryingService;
 import com.fileloc.application.appservices.contracts.FileHandling;
 import com.fileloc.application.appservices.contracts.FileInputHandler;
@@ -14,6 +15,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.grid.contextmenu.GridMenuItem;
 import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
@@ -27,10 +29,7 @@ import org.apache.commons.io.FileUtils;
 import org.aspectj.weaver.StandardAnnotation;
 import org.vaadin.olli.FileDownloadWrapper;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
@@ -42,6 +41,7 @@ import java.util.stream.Stream;
 @Route(value = "")
 public class MainWebPage extends VerticalLayout {
 
+    private final UIListener uiListener = new UIListener();
     private Anchor anchor;
     private FileUploadComponent fileUploadComponent;
 
@@ -52,6 +52,7 @@ public class MainWebPage extends VerticalLayout {
     private FileInputHandler fileInputHandlerService;
 
     private final FileQueryingService fileQueryingService;
+    private final FileDirectoryQueryService fileDirectoryQueryService;
 
     private  GridContextMenu<FileEntity> fileListContext;
     private static final UIPlumber uiPlumber = new UIPlumber();
@@ -62,7 +63,7 @@ public class MainWebPage extends VerticalLayout {
     public MainWebPage(FileHandling fileHandlerService,
                        FileOutputHandler fileOutputHandlerService,
                        FileQueryingService fileQueryingService,
-                       FileInputHandler fileInputHandlerService) {
+                       FileInputHandler fileInputHandlerService,FileDirectoryQueryService fileDirectoryQueryService) {
 
         //ui configuration
         uiPlumber.uiMainPageStyling(this);
@@ -73,6 +74,7 @@ public class MainWebPage extends VerticalLayout {
         this.fileOutputHandlerService = fileOutputHandlerService;
         this.fileInputHandlerService = fileInputHandlerService;
         this.fileQueryingService = fileQueryingService;
+        this.fileDirectoryQueryService = fileDirectoryQueryService;
         this.fileUploadComponent = new FileUploadComponent(fileSystemManagerUtility(),fileOutputHandlerService,this);
         //grid fileList is configured
         configureFileGrid();
@@ -94,7 +96,8 @@ public class MainWebPage extends VerticalLayout {
     private void configureContextMenu() {
         fileListContext = fileList.addContextMenu();
         fileListContext.setOpenOnClick(true);
-        fileListContext.addItem("Download",new UIListener().fileDownloadRequestListener());
+        fileListContext.addItem("Download",uiListener.fileDownloadRequestListener());
+        fileListContext.addItem("Delete",uiListener.fileDeleteRequestListener());
     }
 
     /**GET ACTIVE FILE DIR.**/
@@ -114,7 +117,7 @@ public class MainWebPage extends VerticalLayout {
 
     /**LOAD FILES FROM DB.**/
     public void fillFileListWithFiles(){
-        fileList.setItems(fileQueryingService.findAllFilesFromDB());
+        fileList.setItems(fileDirectoryQueryService.findRootDirectory().getFilesOnDirectory());
     }
 
 
@@ -125,10 +128,23 @@ public class MainWebPage extends VerticalLayout {
 
           return selectedFile-> {
 
-
+              StreamResource resource = new StreamResource(selectedFile.getItem().get().getFileName(),
+                      ()->fileInputHandlerService.fileInput(selectedFile.getItem().get()));
+              anchor = new Anchor(resource,"a");
+              anchor.setVisible(true);
+              add(anchor);
           };
         }
-
+        private  ComponentEventListener <GridContextMenu.GridContextMenuItemClickEvent<FileEntity>> fileDeleteRequestListener(){
+            return selectedFile->
+            {   //DELETE FILE FROM DB
+                fileDirectoryQueryService.deleteFileDirectoryFromFile(selectedFile.getItem().get());
+                //DELETE FILE FROM FILE SYSTEM
+                fileHandlerService.deleteFileFromSystem(selectedFile.getItem().get());
+                Notification.show("Successfully Deleted",10000, Notification.Position.MIDDLE);
+                fillFileListWithFiles();
+            };
+        }
 
     }
 

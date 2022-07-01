@@ -28,6 +28,7 @@ public class Directory implements Serializable {
 
     }
 
+    /* Value based equality check */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
