@@ -11,11 +11,16 @@ import com.fileloc.application.views.UIComponentGenericStyler;
 import com.fileloc.application.views.downloadsection.FileDownloadComponent;
 import com.fileloc.application.views.uploadsection.FileUploadComponent;
 import com.vaadin.flow.component.*;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.grid.contextmenu.GridMenuItem;
 import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
@@ -27,6 +32,7 @@ import com.vaadin.flow.server.frontend.installer.DefaultFileDownloader;
 import org.apache.catalina.webresources.FileResource;
 import org.apache.commons.io.FileUtils;
 import org.aspectj.weaver.StandardAnnotation;
+import org.vaadin.firitin.components.DynamicFileDownloader;
 import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.*;
@@ -40,12 +46,9 @@ import java.util.stream.Stream;
 @PageTitle("FileL@ck")
 @Route(value = "")
 public class MainWebPage extends VerticalLayout {
-
     private final UIListener uiListener = new UIListener();
-    private Anchor anchor;
     private FileUploadComponent fileUploadComponent;
 
-    private FileDownloadComponent fileDownloadComponent;
     private FileHandling fileHandlerService;
     private FileOutputHandler fileOutputHandlerService;
 
@@ -59,6 +62,7 @@ public class MainWebPage extends VerticalLayout {
 
     private Grid<FileEntity> fileList = new Grid<>(FileEntity.class);
 
+    private Anchor downloadAnchor ;
 
     public MainWebPage(FileHandling fileHandlerService,
                        FileOutputHandler fileOutputHandlerService,
@@ -81,10 +85,14 @@ public class MainWebPage extends VerticalLayout {
         configureFileUpload();
         configureContextMenu();
         fillFileListWithFiles();
-
+        configureDownloadNotification();
         //create or get file from service.
 
         add(fileList,fileUploadComponent);
+    }
+
+    private void configureDownloadNotification() {
+
     }
 
     /**FILE UPLOAD COMPONENT**/
@@ -96,7 +104,7 @@ public class MainWebPage extends VerticalLayout {
     private void configureContextMenu() {
         fileListContext = fileList.addContextMenu();
         fileListContext.setOpenOnClick(true);
-        fileListContext.addItem("Download",uiListener.fileDownloadRequestListener());
+        //fileListContext.addItem();
         fileListContext.addItem("Delete",uiListener.fileDeleteRequestListener());
     }
 
@@ -124,18 +132,17 @@ public class MainWebPage extends VerticalLayout {
 
     /**UI EVENTS.**/
     private class UIListener{
-        private  ComponentEventListener <GridContextMenu.GridContextMenuItemClickEvent<FileEntity>>  fileDownloadRequestListener(){
+        private  ComponentEventListener <GridContextMenu.GridContextMenuItemClickEvent<FileEntity>>  fileDownloadRequestListener() {
 
-          return selectedFile-> {
+            return selectedFile -> {
+                StreamResource resource =
+                        new StreamResource(selectedFile.getItem().get().getFileName(),
+                                ()->fileInputHandlerService.fileInput(selectedFile.getItem().get()));
 
-              StreamResource resource = new StreamResource(selectedFile.getItem().get().getFileName(),
-                      ()->fileInputHandlerService.fileInput(selectedFile.getItem().get()));
-              anchor = new Anchor(resource,"a");
-              anchor.setVisible(true);
-              add(anchor);
-          };
+            };
         }
         private  ComponentEventListener <GridContextMenu.GridContextMenuItemClickEvent<FileEntity>> fileDeleteRequestListener(){
+
             return selectedFile->
             {   //DELETE FILE FROM DB
                 fileDirectoryQueryService.deleteFileDirectoryFromFile(selectedFile.getItem().get());

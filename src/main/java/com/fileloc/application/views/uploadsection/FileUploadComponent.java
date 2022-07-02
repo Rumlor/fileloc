@@ -50,8 +50,8 @@ public class FileUploadComponent extends VerticalLayout {
     private void setUploaderUIAttributes() {
 
         fileUploader = new Upload(uiListener.uploadFileEventListener(uploadedFileDirectory));
-        fileUploader.setDropAllowed(true);
-        fileUploader.setDropLabel(new Label("Drag and drop file here"));
+        fileUploader.setDropAllowed(false);
+        fileUploader.setSizeFull();
         fileUploader.setMaxFiles(1);
         //in bytes . equals 512 MBs.
         fileUploader.setMaxFileSize(512*1024*1024);
@@ -75,7 +75,7 @@ public class FileUploadComponent extends VerticalLayout {
         }
       private Receiver uploadFileEventListener(File uploadFileDirectory){
 
-          return  (String fileName, String mimeType) -> {
+          return  (MultiFileReceiver) (String fileName, String mimeType) -> {
               try {
                   File file = new File(uploadFileDirectory,fileName);
                   return fileOutputHandlerService.fileOutput(file);
