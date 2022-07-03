@@ -1,6 +1,5 @@
 package com.fileloc.application.views.mainpage;
 
-import com.fileloc.application.applicationconstants.FileSystemConstants;
 import com.fileloc.application.appservices.appdataservices.FileDirectoryQueryService;
 import com.fileloc.application.appservices.appdataservices.FileQueryingService;
 import com.fileloc.application.appservices.contracts.FileHandling;
@@ -8,46 +7,27 @@ import com.fileloc.application.appservices.contracts.FileInputHandler;
 import com.fileloc.application.appservices.contracts.FileOutputHandler;
 import com.fileloc.application.domain.content.FileEntity;
 import com.fileloc.application.views.UIComponentGenericStyler;
-import com.fileloc.application.views.downloadsection.FileDownloadComponent;
+import com.fileloc.application.views.downloadsection.OptionsComponent;
 import com.fileloc.application.views.uploadsection.FileUploadComponent;
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
-import com.vaadin.flow.component.grid.contextmenu.GridMenuItem;
-import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.StreamResource;
-import com.vaadin.flow.server.VaadinServletService;
-import com.vaadin.flow.server.VaadinSession;
-import com.vaadin.flow.server.frontend.installer.DefaultFileDownloader;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.webresources.FileResource;
-import org.apache.commons.io.FileUtils;
-import org.aspectj.weaver.StandardAnnotation;
-import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.*;
-import java.net.MalformedURLException;
-import java.nio.file.CopyOption;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.stream.Stream;
 
 @PageTitle("FileL@ck")
 @Route(value = "")
 @Slf4j
 public class MainWebPage extends VerticalLayout {
 
-    private final UIListener uiListener = new UIListener();
-    private Anchor anchor;
     private FileUploadComponent fileUploadComponent;
 
-    private FileDownloadComponent fileDownloadComponent;
+    private OptionsComponent optionsComponent;
+
     private FileHandling fileHandlerService;
     private FileOutputHandler fileOutputHandlerService;
 
@@ -56,9 +36,7 @@ public class MainWebPage extends VerticalLayout {
     private final FileQueryingService fileQueryingService;
     private final FileDirectoryQueryService fileDirectoryQueryService;
 
-    private  GridContextMenu<FileEntity> fileListContext;
     private static final UIPlumber uiPlumber = new UIPlumber();
-
     private Grid<FileEntity> fileList = new Grid<>(FileEntity.class);
 
 
@@ -78,29 +56,31 @@ public class MainWebPage extends VerticalLayout {
         this.fileQueryingService = fileQueryingService;
         this.fileDirectoryQueryService = fileDirectoryQueryService;
         this.fileUploadComponent = new FileUploadComponent(fileSystemManagerUtility(),fileOutputHandlerService,this);
+        this.optionsComponent = new OptionsComponent(fileInputHandlerService);
         //grid fileList is configured
+
         configureFileGrid();
+        var gridAndOptions = configureFileGridAndOptionsComponent();
         configureFileUpload();
-        configureContextMenu();
         fillFileListWithFiles();
 
-        //create or get file from service.
 
-        add(fileList,fileUploadComponent);
+        add(gridAndOptions,fileUploadComponent);
     }
+
+    private HorizontalLayout configureFileGridAndOptionsComponent() {
+        HorizontalLayout layout = new HorizontalLayout(fileList,optionsComponent);
+        layout.setFlexGrow(3,fileList);
+        layout.setFlexGrow(1,optionsComponent);
+        return layout;
+    }
+
 
     /**FILE UPLOAD COMPONENT**/
     private void configureFileUpload() {
         fileUploadComponent.setSizeFull();
     }
 
-    /**CONTEXT MENU.**/
-    private void configureContextMenu() {
-        fileListContext = fileList.addContextMenu();
-        fileListContext.setOpenOnClick(true);
-        fileListContext.addItem("Download",uiListener.fileDownloadRequestListener());
-        fileListContext.addItem("Delete",uiListener.fileDeleteRequestListener());
-    }
 
     /**GET ACTIVE FILE DIR.**/
     private  File fileSystemManagerUtility(){
@@ -115,7 +95,23 @@ public class MainWebPage extends VerticalLayout {
         fileList.addColumn(column->column.getFileDirectory().getFileLocation().getContainingDirectory()).setHeader("File Path");
         fileList.addColumn(column->column.getFileSize()).setHeader("File Size");
         fileList.getColumns().forEach(fileEntityColumn -> fileEntityColumn.setAutoWidth(true));
+        fileList.addItemClickListener(item->{
+            optionsComponent.setVisible(true);
+            optionsComponent.fillOptions(item.getItem());
+        });
+        fileList.setAllRowsVisible(true);
+
     }
+
+
+
+
+
+
+
+
+
+
 
     /**LOAD FILES FROM DB.**/
     public void fillFileListWithFiles(){
@@ -124,33 +120,6 @@ public class MainWebPage extends VerticalLayout {
 
     }
 
-
-
-    /**UI EVENTS.**/
-    private class UIListener{
-        private  ComponentEventListener <GridContextMenu.GridContextMenuItemClickEvent<FileEntity>>  fileDownloadRequestListener(){
-
-          return selectedFile-> {
-
-              StreamResource resource = new StreamResource(selectedFile.getItem().get().getFileName(),
-                      ()->fileInputHandlerService.fileInput(selectedFile.getItem().get()));
-              anchor = new Anchor(resource,"a");
-              anchor.setVisible(true);
-              add(anchor);
-          };
-        }
-        private  ComponentEventListener <GridContextMenu.GridContextMenuItemClickEvent<FileEntity>> fileDeleteRequestListener(){
-            return selectedFile->
-            {   //DELETE FILE FROM DB
-                fileDirectoryQueryService.deleteFileDirectoryFromFile(selectedFile.getItem().get());
-                //DELETE FILE FROM FILE SYSTEM
-                fileHandlerService.deleteFileFromSystem(selectedFile.getItem().get());
-                Notification.show("Successfully Deleted",10000, Notification.Position.MIDDLE);
-                fillFileListWithFiles();
-            };
-        }
-
-    }
 
     /**UI VISUAL CONFIG.**/
     private static class UIPlumber {
