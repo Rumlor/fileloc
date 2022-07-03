@@ -24,6 +24,7 @@ import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinServletService;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.frontend.installer.DefaultFileDownloader;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.webresources.FileResource;
 import org.apache.commons.io.FileUtils;
 import org.aspectj.weaver.StandardAnnotation;
@@ -39,6 +40,7 @@ import java.util.stream.Stream;
 
 @PageTitle("FileL@ck")
 @Route(value = "")
+@Slf4j
 public class MainWebPage extends VerticalLayout {
 
     private final UIListener uiListener = new UIListener();
@@ -109,7 +111,7 @@ public class MainWebPage extends VerticalLayout {
     private void configureFileGrid(){
         fileList.setColumns("fileName","createdUserName");
         fileList.addColumn(column->Boolean.valueOf(column.isFileLocked()).toString()).setHeader("File Locked?");
-        fileList.addColumn(column->column.getCreationTime().toString()).setHeader("Creation Time");
+        fileList.addColumn(column->column.getUpdateTime().toLocalDate().toString()).setHeader("Creation Time");
         fileList.addColumn(column->column.getFileDirectory().getFileLocation().getContainingDirectory()).setHeader("File Path");
         fileList.addColumn(column->column.getFileSize()).setHeader("File Size");
         fileList.getColumns().forEach(fileEntityColumn -> fileEntityColumn.setAutoWidth(true));
@@ -117,7 +119,9 @@ public class MainWebPage extends VerticalLayout {
 
     /**LOAD FILES FROM DB.**/
     public void fillFileListWithFiles(){
-        fileList.setItems(fileDirectoryQueryService.findRootDirectory().getFilesOnDirectory());
+        var res = fileDirectoryQueryService.findRootDirectory();
+       var condition = res!=null ? fileList.setItems(res.getFilesOnDirectory()) : null;
+
     }
 
 

@@ -10,11 +10,13 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.upload.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
+@Slf4j
 public class FileUploadComponent extends VerticalLayout {
     private  Upload fileUploader;
     private Span errorField;
@@ -77,6 +79,7 @@ public class FileUploadComponent extends VerticalLayout {
 
           return  (String fileName, String mimeType) -> {
               try {
+                  log.info("Uploading {} file..",fileName);
                   File file = new File(uploadFileDirectory,fileName);
                   return fileOutputHandlerService.fileOutput(file);
               } catch (Exception e) {

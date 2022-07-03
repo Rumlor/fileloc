@@ -1,5 +1,6 @@
 package com.fileloc.application.appservices;
 
+import com.fileloc.application.appservices.appdataservices.FileDirectoryQueryService;
 import com.fileloc.application.appservices.appdataservices.FileSystemDataSourceRelation;
 import com.fileloc.application.appservices.contracts.FileOutputHandler;
 import lombok.RequiredArgsConstructor;
@@ -17,19 +18,27 @@ import java.io.IOException;
 public class FileOutputHandlerService implements FileOutputHandler {
 
     private final FileSystemDataSourceRelation fileSystemDataSourceRelation;
+    private final FileDirectoryQueryService fileDirectoryQueryService;
     @Override
     public FileOutputStream fileOutput(File file) {
-
+        log.info("output stream file {}",file.getPath());
+        FileOutputStream fileOutputStream=null;
+        long length = file.length();
             try {
-                FileOutputStream fileOutputStream =new FileOutputStream(file);
-                return fileOutputStream;
+                 fileOutputStream = new FileOutputStream(file);
             }catch (FileNotFoundException fileNotFoundException){
+                //exception is caught only to be able to log it.
                 log.info("File {} could not be found.",file.getName());
-            }finally {
-                fileSystemDataSourceRelation.persistFileInformationToStorage(file);
+                throw new RuntimeException(fileNotFoundException);
             }
 
+        if(!fileDirectoryQueryService.checkIfParentDirectoryExists(file))
+            //if file directory is present , merges current file to parent directory
+            fileSystemDataSourceRelation.persistFileInformationToStorage(file,length);
+        else
+            //if file directory is not present , creates new directory and binds file to it.
+            fileSystemDataSourceRelation.persistFileToDirectory(file,length);
 
-        return null;
+        return fileOutputStream;
     }
 }

@@ -28,5 +28,4 @@ public class FileEntity extends ApplicationBaseEntity {
     private String fileSize;
 
 
-
 }
