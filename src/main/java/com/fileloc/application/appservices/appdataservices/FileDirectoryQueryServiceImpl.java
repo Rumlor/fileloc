@@ -27,8 +27,7 @@ public class FileDirectoryQueryServiceImpl implements FileDirectoryQueryService{
     }
 
     @Override
-    public boolean deleteFileDirectoryFromFile(FileEntity fileEntity) {
-
+    public boolean deleteFileFromDB(FileEntity fileEntity) {
         FileDirectory directory = fileEntity.getFileDirectory();
         directory.getFilesOnDirectory().remove(fileEntity);
         fileDirectoryRepository.save(directory);

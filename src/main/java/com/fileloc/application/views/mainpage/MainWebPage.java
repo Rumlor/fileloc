@@ -7,6 +7,7 @@ import com.fileloc.application.appservices.contracts.FileInputHandler;
 import com.fileloc.application.appservices.contracts.FileOutputHandler;
 import com.fileloc.application.domain.content.FileEntity;
 import com.fileloc.application.views.UIComponentGenericStyler;
+import com.fileloc.application.views.UIEventHandler;
 import com.fileloc.application.views.downloadsection.OptionsComponent;
 import com.fileloc.application.views.uploadsection.FileUploadComponent;
 import com.vaadin.flow.component.*;
@@ -43,7 +44,9 @@ public class MainWebPage extends VerticalLayout {
     public MainWebPage(FileHandling fileHandlerService,
                        FileOutputHandler fileOutputHandlerService,
                        FileQueryingService fileQueryingService,
-                       FileInputHandler fileInputHandlerService,FileDirectoryQueryService fileDirectoryQueryService) {
+                       FileInputHandler fileInputHandlerService,
+                       FileDirectoryQueryService fileDirectoryQueryService,
+                       UIEventHandler uiEventHandler) {
 
         //ui configuration
         uiPlumber.uiMainPageStyling(this);
@@ -56,7 +59,7 @@ public class MainWebPage extends VerticalLayout {
         this.fileQueryingService = fileQueryingService;
         this.fileDirectoryQueryService = fileDirectoryQueryService;
         this.fileUploadComponent = new FileUploadComponent(fileSystemManagerUtility(),fileOutputHandlerService,this);
-        this.optionsComponent = new OptionsComponent(fileInputHandlerService);
+        this.optionsComponent = new OptionsComponent(fileInputHandlerService,this,uiEventHandler);
         //grid fileList is configured
 
         configureFileGrid();
