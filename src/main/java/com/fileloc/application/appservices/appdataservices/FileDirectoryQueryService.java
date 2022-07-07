@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface FileDirectoryQueryService {
     FileDirectory findRootDirectory();
-    boolean deleteFileDirectoryFromFile(FileEntity file);
+    boolean deleteFileFromDB(FileEntity file);
 
     boolean checkIfParentDirectoryExists(File file);
 }

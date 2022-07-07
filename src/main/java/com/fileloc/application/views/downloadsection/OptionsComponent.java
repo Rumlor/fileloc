@@ -1,7 +1,10 @@
 package com.fileloc.application.views.downloadsection;
 
+import com.fileloc.application.appservices.appdataservices.UI_AppServices_Bridge_Impl;
 import com.fileloc.application.appservices.contracts.FileInputHandler;
 import com.fileloc.application.domain.content.FileEntity;
+import com.fileloc.application.views.UIEventHandler;
+import com.fileloc.application.views.mainpage.MainWebPage;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -36,12 +39,18 @@ public class OptionsComponent extends FormLayout {
 
     private FileInputHandler handler;
 
-    public OptionsComponent(FileInputHandler fileInputHandler) {
+    private MainWebPage mainWebPage;
+
+    private UIEventHandler uiEventHandler;
+
+    public OptionsComponent(FileInputHandler fileInputHandler, MainWebPage mainWebPage,UIEventHandler uiEventHandler) {
         fileEntityBinder.bind(fileName,FileEntity::getFileName,FileEntity::setFileName);
         fileEntityBinder.bind(fileSize,FileEntity::getFileSize,FileEntity::setFileSize);
         fileEntityBinder.bind(fileLastUpdate,getter->getter.getUpdateTime().toString(),(setter,val)->setter.setUpdateTime(LocalDateTime.parse(val)));
         fileEntityBinder.bind(fileLocation,getter->getter.getFileDirectory().getFileLocation().getContainingDirectory(),(setter,val)->setter.getFileDirectory().getFileLocation().setContainingDirectory(val));
         setInstanceFields(fileInputHandler);
+        this.mainWebPage = mainWebPage;
+        this.uiEventHandler = uiEventHandler;
         this.setVisible(false);
         createButtonsLayout();
         setButtonEvents();
@@ -77,9 +86,9 @@ public class OptionsComponent extends FormLayout {
     }
 
     private void setButtonEvents() {
-        delete.addClickListener(clickEvent ->{});
 
-        download.addClickListener(clickEvent ->{});
+        delete.addClickListener(event->uiEventHandler.deleteEvent(event,this.file,this.mainWebPage));
+        //download.addClickListener(clickEvent ->{});
     }
 
 
