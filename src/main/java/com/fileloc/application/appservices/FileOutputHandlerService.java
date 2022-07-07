@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 
 @Component
 @Slf4j
@@ -23,7 +24,6 @@ public class FileOutputHandlerService implements FileOutputHandler {
     public FileOutputStream fileOutput(File file) {
         log.info("output stream file {}",file.getPath());
         FileOutputStream fileOutputStream=null;
-        long length = file.length();
             try {
                  fileOutputStream = new FileOutputStream(file);
             }catch (FileNotFoundException fileNotFoundException){
@@ -31,14 +31,23 @@ public class FileOutputHandlerService implements FileOutputHandler {
                 log.info("File {} could not be found.",file.getName());
                 throw new RuntimeException(fileNotFoundException);
             }
-
-        if(!fileDirectoryQueryService.checkIfParentDirectoryExists(file))
-            //if file directory is present , merges current file to parent directory
-            fileSystemDataSourceRelation.persistFileInformationToStorage(file,length);
-        else
-            //if file directory is not present , creates new directory and binds file to it.
-            fileSystemDataSourceRelation.persistFileToDirectory(file,length);
-
         return fileOutputStream;
     }
+
+    public void fileOutputToDb(String fileName){
+
+        //save outputted file to db.
+        FileHandlingService handlingService = new FileHandlingService();
+        var activeDir = handlingService.getActiveFileFromHandlerService();
+        File fileToBeSaved = new File(activeDir,fileName);
+
+        if(!fileDirectoryQueryService.checkIfParentDirectoryExists(fileToBeSaved))
+            //if file directory is present , merges current file to parent directory
+            fileSystemDataSourceRelation.persistFileInformationToStorage(fileToBeSaved,fileToBeSaved.length());
+        else
+            //if file directory is not present , creates new directory and binds file to it.
+            fileSystemDataSourceRelation.persistFileToDirectory(fileToBeSaved,fileToBeSaved.length());
+    }
+
+
 }

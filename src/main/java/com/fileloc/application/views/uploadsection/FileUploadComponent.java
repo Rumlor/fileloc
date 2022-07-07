@@ -79,7 +79,7 @@ public class FileUploadComponent extends VerticalLayout {
 
           return  (String fileName, String mimeType) -> {
               try {
-                  log.info("Uploading {} file..",fileName);
+                  log.info("Uploading {} file with mimeType {}..",fileName,mimeType);
                   File file = new File(uploadFileDirectory,fileName);
                   return fileOutputHandlerService.fileOutput(file);
               } catch (Exception e) {
@@ -90,7 +90,12 @@ public class FileUploadComponent extends VerticalLayout {
       }
       private ComponentEventListener<SucceededEvent> succeededEventComponentEventListener(){
         return event -> {
+            /**
+             *file logs should be saved to db after successful output to filesystem.
+             */
+            fileOutputHandlerService.fileOutputToDb(event.getFileName());
             parentMainWebPage.fillFileListWithFiles();
+
             hideErrorMessage();
             Notification.show(event.getFileName().concat(" Successfully Uploaded"),5000, Notification.Position.MIDDLE);
         };
