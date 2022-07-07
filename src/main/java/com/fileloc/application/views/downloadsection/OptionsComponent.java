@@ -9,11 +9,13 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.server.StreamResource;
 import org.vaadin.olli.FileDownloadWrapper;
 
@@ -26,13 +28,14 @@ public class OptionsComponent extends FormLayout {
 
     private TextField fileName = new TextField("File Name");
     private TextField fileSize = new TextField("File Size");
-    private TextField fileLastUpdate = new TextField("File Update Time");
+    private TextField fileLastUpdate = new TextField("Last Update Time");
 
     private TextField fileLocation = new TextField("File Location");
 
     private Button delete = new Button("Delete");
     private Button download = new Button("Download");
 
+    private Button closeTab = new Button("Close");
     private Binder<FileEntity> fileEntityBinder = new Binder<>(FileEntity.class);
 
     private FileEntity file;
@@ -64,6 +67,7 @@ public class OptionsComponent extends FormLayout {
     private void createButtonsLayout() {
         delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
         download.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        closeTab.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
     }
 
     private Component[] createLayout() {
@@ -72,7 +76,7 @@ public class OptionsComponent extends FormLayout {
                 fileSize,
                 fileLastUpdate,
                 fileLocation,
-                new HorizontalLayout(delete,download)};
+                new HorizontalLayout(delete,download,closeTab)};
     }
 
 
@@ -86,7 +90,7 @@ public class OptionsComponent extends FormLayout {
     }
 
     private void setButtonEvents() {
-
+        closeTab.addClickListener(event->this.setVisible(false));
         delete.addClickListener(event->uiEventHandler.deleteEvent(event,this.file,this.mainWebPage));
         //download.addClickListener(clickEvent ->{});
     }

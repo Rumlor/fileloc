@@ -94,7 +94,7 @@ public class MainWebPage extends VerticalLayout {
     private void configureFileGrid(){
         fileList.setColumns("fileName","createdUserName");
         fileList.addColumn(column->Boolean.valueOf(column.isFileLocked()).toString()).setHeader("File Locked?");
-        fileList.addColumn(column->column.getUpdateTime().toLocalDate().toString()).setHeader("Creation Time");
+        fileList.addColumn(column->column.getUpdateTime().toLocalDate().toString()).setHeader("Last Update Time");
         fileList.addColumn(column->column.getFileDirectory().getFileLocation().getContainingDirectory()).setHeader("File Path");
         fileList.addColumn(column->column.getFileSize()).setHeader("File Size");
         fileList.getColumns().forEach(fileEntityColumn -> fileEntityColumn.setAutoWidth(true));
