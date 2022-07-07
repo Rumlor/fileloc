@@ -38,8 +38,11 @@ public class FileSystemDataSourceRelationService
         file.setFileName(fileToBePersisted.getName());
         file.setCreatedUserName("Rumlor");
         file.setFileDirectory(fileDirectory);
-        file.setFileSize(String.valueOf(fileLength/1024).concat("KB"));
-
+        var fileSize =     (fileLength/1024) <=1024 ?
+                String.valueOf(fileLength/1024).concat("KB")
+                :
+                String.valueOf(fileLength/(1024*1024)).concat("MB");
+        file.setFileSize(fileSize);
         fileDirectory.setFileLocation(Directory.builder().containingDirectory(fileToBePersisted.getParent()).build());
         fileDirectory.setFilesOnDirectory(Arrays.asList(file));
 
@@ -70,7 +73,11 @@ public class FileSystemDataSourceRelationService
             file.setFileName(fileToBePersisted.getName());
             file.setCreatedUserName("Rumlor");
             file.setFileDirectory(fileDirectory);
-            file.setFileSize(String.valueOf(fileLength/1024).concat("KB"));
+            var fileSize =     (fileLength/1024) <=1024 ?
+                String.valueOf(fileLength/1024).concat("KB")
+                :
+                String.valueOf(fileLength/(1024*1024)).concat("MB");
+            file.setFileSize(fileSize);
             fileDirectory.setFileLocation(Directory.builder().containingDirectory(fileToBePersisted.getParent()).build());
             fileDirectory.setFilesOnDirectory(Arrays.asList(file));
         }
