@@ -17,13 +17,14 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.server.StreamResource;
+import lombok.extern.slf4j.Slf4j;
 import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.stream.Stream;
-
+@Slf4j
 public class OptionsComponent extends FormLayout {
 
     private TextField fileName = new TextField("File Name");
@@ -46,6 +47,7 @@ public class OptionsComponent extends FormLayout {
 
     private UIEventHandler uiEventHandler;
 
+    private FileInputHandler fileInputHandler;
     public OptionsComponent(FileInputHandler fileInputHandler, MainWebPage mainWebPage,UIEventHandler uiEventHandler) {
         fileEntityBinder.bind(fileName,FileEntity::getFileName,FileEntity::setFileName);
         fileEntityBinder.bind(fileSize,FileEntity::getFileSize,FileEntity::setFileSize);
@@ -83,16 +85,12 @@ public class OptionsComponent extends FormLayout {
     public void fillOptions(FileEntity file){
         fileEntityBinder.readBean(file);
         this.file=file;
-        StreamResource resource = new StreamResource(this.fileName.getValue(),()->handler.fileInput(file));
-        FileDownloadWrapper wrapper = new FileDownloadWrapper(resource);
-        wrapper.wrapComponent(download);
-        add(wrapper);
     }
 
     private void setButtonEvents() {
         closeTab.addClickListener(event->this.setVisible(false));
         delete.addClickListener(event->uiEventHandler.deleteEvent(event,this.file,this.mainWebPage));
-        //download.addClickListener(clickEvent ->{});
+        download.addClickListener(event->uiEventHandler.downloadEvent(this.file,this));
     }
 
 
