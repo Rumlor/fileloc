@@ -1,4 +1,4 @@
-package com.fileloc.application.appconfig;
+package com.fileloc.application.appconfig.datasource;
 
 import com.fileloc.application.appconfig.propertysource.propertysourcebinders.DataSourcePropertyBinder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +42,7 @@ public class ApplicationDataSourceConfig {
         LocalContainerEntityManagerFactoryBean entityManagerFactoryBean =new LocalContainerEntityManagerFactoryBean();
         entityManagerFactoryBean.setDataSource(dataSourceBean);
         entityManagerFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-        entityManagerFactoryBean.setPackagesToScan("com.fileloc.application.domain.content");
+        entityManagerFactoryBean.setPackagesToScan("com.fileloc.application.domain.content","com.fileloc.application.domain.appuser");
         entityManagerFactoryBean.setJpaProperties(createJpaProperties());
         return entityManagerFactoryBean;
     }

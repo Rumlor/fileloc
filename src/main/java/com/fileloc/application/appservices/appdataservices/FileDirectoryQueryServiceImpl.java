@@ -1,7 +1,7 @@
 package com.fileloc.application.appservices.appdataservices;
 
-import com.fileloc.application.applicationconstants.FileSystemConstants;
-import com.fileloc.application.apprepo.FileDirectoryRepository;
+import com.fileloc.application.applicationconstants.appcontentconstants.FileSystemConstants;
+import com.fileloc.application.apprepo.appcontentrepopackage.FileDirectoryRepository;
 import com.fileloc.application.domain.components.Directory;
 import com.fileloc.application.domain.content.FileDirectory;
 import com.fileloc.application.domain.content.FileEntity;
@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.util.List;
-import java.util.Optional;
 
 @Component
 public class FileDirectoryQueryServiceImpl implements FileDirectoryQueryService{

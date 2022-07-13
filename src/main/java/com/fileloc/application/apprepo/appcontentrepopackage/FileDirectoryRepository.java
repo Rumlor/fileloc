@@ -1,4 +1,4 @@
-package com.fileloc.application.apprepo;
+package com.fileloc.application.apprepo.appcontentrepopackage;
 
 import com.fileloc.application.domain.components.Directory;
 import com.fileloc.application.domain.content.FileDirectory;

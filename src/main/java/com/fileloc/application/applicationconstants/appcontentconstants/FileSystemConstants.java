@@ -1,4 +1,4 @@
-package com.fileloc.application.applicationconstants;
+package com.fileloc.application.applicationconstants.appcontentconstants;
 
 public class FileSystemConstants {
     public static final String ROOT_DIR = "C:\\filestorage";

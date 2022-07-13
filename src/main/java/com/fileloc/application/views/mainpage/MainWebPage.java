@@ -5,12 +5,14 @@ import com.fileloc.application.appservices.appdataservices.FileQueryingService;
 import com.fileloc.application.appservices.contracts.FileHandling;
 import com.fileloc.application.appservices.contracts.FileInputHandler;
 import com.fileloc.application.appservices.contracts.FileOutputHandler;
+import com.fileloc.application.appservices.securityservices.SecurityContextAppService;
 import com.fileloc.application.domain.content.FileEntity;
 import com.fileloc.application.views.UIComponentGenericStyler;
 import com.fileloc.application.views.UIEventHandler;
 import com.fileloc.application.views.downloadsection.OptionsComponent;
 import com.fileloc.application.views.uploadsection.FileUploadComponent;
 import com.vaadin.flow.component.*;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -18,15 +20,18 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.annotation.security.PermitAll;
 import java.io.*;
 
 @PageTitle("FileL@ck")
-@Route(value = "")
+@Route(value = "",registerAtStartup = true)
 @Slf4j
+@PermitAll
 public class MainWebPage extends VerticalLayout {
 
     private FileUploadComponent fileUploadComponent;
 
+    private final Button logout;
     private OptionsComponent optionsComponent;
 
     private FileHandling fileHandlerService;
@@ -38,6 +43,8 @@ public class MainWebPage extends VerticalLayout {
     private final FileDirectoryQueryService fileDirectoryQueryService;
 
     private static final UIPlumber uiPlumber = new UIPlumber();
+
+    private final SecurityContextAppService securityContextAppService;
     private Grid<FileEntity> fileList = new Grid<>(FileEntity.class);
 
 
@@ -46,7 +53,8 @@ public class MainWebPage extends VerticalLayout {
                        FileQueryingService fileQueryingService,
                        FileInputHandler fileInputHandlerService,
                        FileDirectoryQueryService fileDirectoryQueryService,
-                       UIEventHandler uiEventHandler) {
+                       UIEventHandler uiEventHandler,
+                       SecurityContextAppService securityContextAppService) {
 
         //ui configuration
         uiPlumber.uiMainPageStyling(this);
@@ -60,15 +68,22 @@ public class MainWebPage extends VerticalLayout {
         this.fileDirectoryQueryService = fileDirectoryQueryService;
         this.fileUploadComponent = new FileUploadComponent(fileSystemManagerUtility(),fileOutputHandlerService,this);
         this.optionsComponent = new OptionsComponent(fileInputHandlerService,this,uiEventHandler);
+        this.securityContextAppService = securityContextAppService;
+        this.logout = new Button("Logout");
         //grid fileList is configured
 
+        configureLogoutHandler();
         configureFileGrid();
         var gridAndOptions = configureFileGridAndOptionsComponent();
         configureFileUpload();
         fillFileListWithFiles();
 
 
-        add(gridAndOptions,fileUploadComponent);
+        add( gridAndOptions, new HorizontalLayout(fileUploadComponent,logout));
+    }
+
+    private void configureLogoutHandler() {
+        logout.addClickListener(event->securityContextAppService.logout());
     }
 
     private HorizontalLayout configureFileGridAndOptionsComponent() {

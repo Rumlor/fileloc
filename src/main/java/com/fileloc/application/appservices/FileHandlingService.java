@@ -1,6 +1,6 @@
 package com.fileloc.application.appservices;
 
-import com.fileloc.application.applicationconstants.FileSystemConstants;
+import com.fileloc.application.applicationconstants.appcontentconstants.FileSystemConstants;
 import com.fileloc.application.appservices.contracts.FileHandling;
 import com.fileloc.application.domain.content.FileEntity;
 import lombok.extern.slf4j.Slf4j;
