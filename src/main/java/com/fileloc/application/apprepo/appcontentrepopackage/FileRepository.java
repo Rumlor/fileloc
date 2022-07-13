@@ -1,5 +1,6 @@
-package com.fileloc.application.apprepo;
+package com.fileloc.application.apprepo.appcontentrepopackage;
 
+import com.fileloc.application.apprepo.ApplicationBaseRepository;
 import com.fileloc.application.domain.content.FileEntity;
 
 import java.util.List;

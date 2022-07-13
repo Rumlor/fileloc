@@ -1,6 +1,6 @@
 package com.fileloc.application.appservices.appdataservices;
 
-import com.fileloc.application.apprepo.FileRepository;
+import com.fileloc.application.apprepo.appcontentrepopackage.FileRepository;
 import com.fileloc.application.domain.content.FileEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

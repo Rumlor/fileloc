@@ -1,19 +1,17 @@
 package com.fileloc.application.appservices.appdataservices;
 
-import com.fileloc.application.apprepo.FileDirectoryRepository;
-import com.fileloc.application.apprepo.FileRepository;
+import com.fileloc.application.apprepo.appcontentrepopackage.FileDirectoryRepository;
+import com.fileloc.application.apprepo.appcontentrepopackage.FileRepository;
 import com.fileloc.application.domain.components.Directory;
 import com.fileloc.application.domain.content.FileDirectory;
 import com.fileloc.application.domain.content.FileEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service

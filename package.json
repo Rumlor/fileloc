@@ -262,9 +262,9 @@
     "lit": "$lit",
     "chokidar": "$chokidar",
     "@vaadin/lit-renderer": "$@vaadin/lit-renderer",
+    "lumo-css-framework": "$lumo-css-framework",
     "@fontsource/exo-2": "$@fontsource/exo-2",
-    "line-awesome": "$line-awesome",
-    "lumo-css-framework": "$lumo-css-framework"
+    "line-awesome": "$line-awesome"
   },
   "vaadin": {
     "dependencies": {

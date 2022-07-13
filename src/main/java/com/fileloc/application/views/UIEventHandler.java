@@ -1,6 +1,7 @@
 package com.fileloc.application.views;
 
 import com.fileloc.application.appservices.appdataservices.UI_AppServices_Bridge;
+import com.fileloc.application.domain.appobjects.UserRegistrationObject;
 import com.fileloc.application.domain.content.FileEntity;
 import com.fileloc.application.views.mainpage.MainWebPage;
 import com.vaadin.flow.component.ClickEvent;
@@ -44,5 +45,10 @@ public class UIEventHandler {
             component.add(anchor);
             anchorElement.executeJs("return new Promise(resolve =>{this.click(); setTimeout(() => resolve(true), 150)})", anchorElement).then(jsonValue -> component.remove(anchor));
 
+    }
+
+    public void registrationEvent(UserRegistrationObject object) {
+        log.info("Registration Service Starting...");
+        ui_appServices_bridge.registrationServiceDelegate().registerUserWithSpecifiedCredentials(object);
     }
 }
