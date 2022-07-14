@@ -4,7 +4,7 @@ Local File Transfer and storage web client-server application using Spring Secur
 
 Enables users to transfer files between devices connected to same local network without requiring any internet connection. Users can manipulate files as stated by their role on the app. Three roles are defined for which users are assigned to restrict certain behaviours like deleting , uploading , or downloading files.
 
-Roles are SUPERUSER, DOWNLOADERS AND UPLAODERS.
+Roles are SUPERUSER, DOWNLOADER AND UPLAODER.
 Superusers have all the privileges app can offer.
 Downloaders can only download files that have been uploaded by other roles.
 Uploaders can only upload files.
