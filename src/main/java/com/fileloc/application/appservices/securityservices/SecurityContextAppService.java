@@ -1,9 +1,10 @@
 package com.fileloc.application.appservices.securityservices;
 
+import com.fileloc.application.domain.appobjects.SecurityContextUserCredential;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public interface SecurityContextAppService {
 
-    UserDetails getAuthenticatedUser();
+    SecurityContextUserCredential getAuthenticatedUser();
     void logout();
 }

@@ -7,6 +7,7 @@ import com.fileloc.application.domain.appuser.AppUser;
 import com.fileloc.application.domain.appuser.AppUserRole;
 import com.fileloc.application.views.UIEventHandler;
 import com.github.rjeschke.txtmark.Run;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -33,7 +34,7 @@ public class RegistrationPage extends VerticalLayout  {
     private final H1 header = new H1("FileLoc Local Content Management App");
     private final H2 subHeader = new H2("Register User");
 
-    private Span error = new Span();
+    private Span info = new Span();
     private final Button registerButton = new Button("Sign-up");
     private TextField userName;
     private PasswordField password;
@@ -73,6 +74,13 @@ public class RegistrationPage extends VerticalLayout  {
         registerButton.addClickListener((clickEvent)-> {
             try {
                 uiEventHandler.registrationEvent(formBinder.writeBeanFromFields());
+                Notification notification  = new Notification();
+                notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                notification.setText("Registration successful.Redirecting...");
+                notification.setDuration(5000);
+                notification.setPosition(Notification.Position.BOTTOM_CENTER);
+                notification.open();
+                notification.addOpenedChangeListener(listener-> UI.getCurrent().getPage().setLocation("/"));
 
             }catch (RuntimeException e){
                 Notification notification  = new Notification();
@@ -86,7 +94,7 @@ public class RegistrationPage extends VerticalLayout  {
     }
 
     private void configureFormFields() {
-        error.setVisible(false);
+        info.setVisible(false);
         userName = new TextField("Username");
         password = new PasswordField("Password");
         passwordConfirm = new PasswordField("Confirm Password");
