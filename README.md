@@ -17,4 +17,12 @@ Vaadin -> UI framework for java. (Great tool to make UI layer incorporated to an
 
 
 Some screenshots from app.
+Main page
 ![main page](https://user-images.githubusercontent.com/25362869/178932994-9f80e88f-a771-419c-bee0-c820ee91d55e.png)
+Login page
+![login](https://user-images.githubusercontent.com/25362869/178933362-6d1cfb30-027a-43c0-aac2-db78520d2672.png)
+Register page
+![register](https://user-images.githubusercontent.com/25362869/178933399-e80904b8-da40-4ea2-9162-4b686208e1ad.png)
+File download section
+![download section](https://user-images.githubusercontent.com/25362869/178933444-849d4c6d-2a8c-4cd0-ae04-8a2d6eeeb496.png)
+
