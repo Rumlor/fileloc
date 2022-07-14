@@ -6,6 +6,7 @@ import com.fileloc.application.appservices.contracts.FileHandling;
 import com.fileloc.application.appservices.contracts.FileInputHandler;
 import com.fileloc.application.appservices.contracts.FileOutputHandler;
 import com.fileloc.application.appservices.securityservices.SecurityContextAppService;
+import com.fileloc.application.appservices.securityservices.UserOperationsAuthorization;
 import com.fileloc.application.domain.content.FileEntity;
 import com.fileloc.application.views.UIComponentGenericStyler;
 import com.fileloc.application.views.UIEventHandler;
@@ -44,30 +45,34 @@ public class MainWebPage extends VerticalLayout {
 
     private static final UIPlumber uiPlumber = new UIPlumber();
 
+    private SecurityContextAppService securityContextAppService;
 
     private Grid<FileEntity> fileList = new Grid<>(FileEntity.class);
 
-
+    private UserOperationsAuthorization userOperationsAuthorization;
     public MainWebPage(FileHandling fileHandlerService,
                        FileOutputHandler fileOutputHandlerService,
                        FileQueryingService fileQueryingService,
                        FileInputHandler fileInputHandlerService,
                        FileDirectoryQueryService fileDirectoryQueryService,
                        UIEventHandler uiEventHandler,
-                       SecurityContextAppService securityContextAppService) {
+                       SecurityContextAppService securityContextAppService,
+                       UserOperationsAuthorization userOperationsAuthorization) {
 
         //ui configuration
         uiPlumber.uiMainPageStyling(this);
         uiPlumber.uiMainPageStyling(fileList);
 
         //file handler servis instances are set here.
+        this.userOperationsAuthorization = userOperationsAuthorization;
         this.fileHandlerService = fileHandlerService;
         this.fileOutputHandlerService = fileOutputHandlerService;
         this.fileInputHandlerService = fileInputHandlerService;
         this.fileQueryingService = fileQueryingService;
         this.fileDirectoryQueryService = fileDirectoryQueryService;
-        this.fileUploadComponent = new FileUploadComponent(fileSystemManagerUtility(),fileOutputHandlerService,this);
-        this.optionsComponent = new OptionsComponent(fileInputHandlerService,this,uiEventHandler);
+        this.securityContextAppService = securityContextAppService;
+        this.fileUploadComponent = new FileUploadComponent(fileSystemManagerUtility(),fileOutputHandlerService,this,userOperationsAuthorization,securityContextAppService);
+        this.optionsComponent = new OptionsComponent(fileInputHandlerService,this,uiEventHandler,securityContextAppService,this.userOperationsAuthorization);
 
         //grid fileList is configured
 

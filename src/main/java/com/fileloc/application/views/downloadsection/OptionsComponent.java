@@ -1,7 +1,10 @@
 package com.fileloc.application.views.downloadsection;
 
+import com.fileloc.application.applicationconstants.AppUserRoles.AppUserRoleConstant;
 import com.fileloc.application.appservices.appdataservices.UI_AppServices_Bridge_Impl;
 import com.fileloc.application.appservices.contracts.FileInputHandler;
+import com.fileloc.application.appservices.securityservices.SecurityContextAppService;
+import com.fileloc.application.appservices.securityservices.UserOperationsAuthorization;
 import com.fileloc.application.domain.content.FileEntity;
 import com.fileloc.application.views.UIEventHandler;
 import com.fileloc.application.views.mainpage.MainWebPage;
@@ -48,18 +51,39 @@ public class OptionsComponent extends FormLayout {
     private UIEventHandler uiEventHandler;
 
     private FileInputHandler fileInputHandler;
-    public OptionsComponent(FileInputHandler fileInputHandler, MainWebPage mainWebPage,UIEventHandler uiEventHandler) {
+
+    private SecurityContextAppService securityContextAppService;
+
+    private UserOperationsAuthorization userOperationsAuthorization;
+    public OptionsComponent(FileInputHandler fileInputHandler, MainWebPage mainWebPage,UIEventHandler uiEventHandler,SecurityContextAppService securityContextAppService,UserOperationsAuthorization userOperationsAuthorization) {
         fileEntityBinder.bind(fileName,FileEntity::getFileName,FileEntity::setFileName);
         fileEntityBinder.bind(fileSize,FileEntity::getFileSize,FileEntity::setFileSize);
         fileEntityBinder.bind(fileLastUpdate,getter->getter.getUpdateTime().toString(),(setter,val)->setter.setUpdateTime(LocalDateTime.parse(val)));
         fileEntityBinder.bind(fileLocation,getter->getter.getFileDirectory().getFileLocation().getContainingDirectory(),(setter,val)->setter.getFileDirectory().getFileLocation().setContainingDirectory(val));
         setInstanceFields(fileInputHandler);
         this.mainWebPage = mainWebPage;
+        this.securityContextAppService = securityContextAppService;
+        this.userOperationsAuthorization = userOperationsAuthorization;
         this.uiEventHandler = uiEventHandler;
         this.setVisible(false);
+        this.delete.setEnabled(false);
+        this.download.setEnabled(false);
+
         createButtonsLayout();
+        disableButtonsIfUserNotAuthorized();
         setButtonEvents();
         add(createLayout());
+    }
+
+    private void disableButtonsIfUserNotAuthorized() {
+        var userRoles = securityContextAppService.getAuthenticatedUser().getRoles();
+        var canDelete = userOperationsAuthorization.canUserDelete(userRoles);
+        var canDownload = userOperationsAuthorization.canUserDownload(userRoles);
+
+        if (canDelete)
+            this.delete.setEnabled(true);
+        if (canDownload)
+            this.download.setEnabled(true);
     }
 
     private void setInstanceFields(FileInputHandler fileInputHandler) {

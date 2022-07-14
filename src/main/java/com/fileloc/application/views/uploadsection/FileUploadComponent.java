@@ -1,9 +1,12 @@
 package com.fileloc.application.views.uploadsection;
 
 import com.fileloc.application.appservices.contracts.FileOutputHandler;
+import com.fileloc.application.appservices.securityservices.SecurityContextAppService;
+import com.fileloc.application.appservices.securityservices.UserOperationsAuthorization;
 import com.fileloc.application.views.mainpage.MainWebPage;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
@@ -22,6 +25,10 @@ public class FileUploadComponent extends VerticalLayout {
     private Span errorField;
     private  UiListener uiListener;
 
+    private UserOperationsAuthorization userOperationsAuthorization;
+
+    private SecurityContextAppService securityContextAppService;
+
     /**File directory to be populated by upload component.**/
     private File uploadedFileDirectory;
     /**File Output operations handler. (Uploading etc.) **/
@@ -29,19 +36,27 @@ public class FileUploadComponent extends VerticalLayout {
 
     /**Reference parent component to refresh list after succesfull file upload**/
     private MainWebPage parentMainWebPage;
-    public FileUploadComponent(File uploadedFileDirectory, FileOutputHandler fileOutputHandlerService,MainWebPage mainWebPage) {
-
+    public FileUploadComponent(File uploadedFileDirectory, FileOutputHandler fileOutputHandlerService,MainWebPage mainWebPage,UserOperationsAuthorization userOperationsAuthorization,SecurityContextAppService securityContextAppService) {
+        this.userOperationsAuthorization = userOperationsAuthorization;
         this.fileOutputHandlerService = fileOutputHandlerService;
         this.uploadedFileDirectory = uploadedFileDirectory;
+        this.securityContextAppService = securityContextAppService;
         this.parentMainWebPage = mainWebPage;
         uiListener = new UiListener();
-
         setUploaderUIAttributes();
         setErrorFieldAttributes();
         setUploaderUIListeners();
-
+        fileUploader.setVisible(false);
+        disableButtonsIfUserNotAuthorized();
         add(fileUploader,errorField);
     }
+
+    private void disableButtonsIfUserNotAuthorized() {
+        var canUpload = userOperationsAuthorization.canUserUpload(securityContextAppService.getAuthenticatedUser().getRoles());
+        if (canUpload)
+            fileUploader.setVisible(true);
+        }
+
     private void setErrorFieldAttributes() {
         errorField = new Span();
         errorField.setVisible(false);
