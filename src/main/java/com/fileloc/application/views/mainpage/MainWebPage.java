@@ -10,6 +10,7 @@ import com.fileloc.application.domain.content.FileEntity;
 import com.fileloc.application.views.UIComponentGenericStyler;
 import com.fileloc.application.views.UIEventHandler;
 import com.fileloc.application.views.downloadsection.OptionsComponent;
+import com.fileloc.application.views.layout.AppMainLayout;
 import com.fileloc.application.views.uploadsection.FileUploadComponent;
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
@@ -23,15 +24,14 @@ import lombok.extern.slf4j.Slf4j;
 import javax.annotation.security.PermitAll;
 import java.io.*;
 
-@PageTitle("FileL@ck")
-@Route(value = "",registerAtStartup = true)
+@PageTitle("FileL@c")
+@Route(value = "",registerAtStartup = true,layout = AppMainLayout.class)
 @Slf4j
 @PermitAll
 public class MainWebPage extends VerticalLayout {
 
     private FileUploadComponent fileUploadComponent;
 
-    private final Button logout;
     private OptionsComponent optionsComponent;
 
     private FileHandling fileHandlerService;
@@ -44,7 +44,7 @@ public class MainWebPage extends VerticalLayout {
 
     private static final UIPlumber uiPlumber = new UIPlumber();
 
-    private final SecurityContextAppService securityContextAppService;
+
     private Grid<FileEntity> fileList = new Grid<>(FileEntity.class);
 
 
@@ -68,8 +68,7 @@ public class MainWebPage extends VerticalLayout {
         this.fileDirectoryQueryService = fileDirectoryQueryService;
         this.fileUploadComponent = new FileUploadComponent(fileSystemManagerUtility(),fileOutputHandlerService,this);
         this.optionsComponent = new OptionsComponent(fileInputHandlerService,this,uiEventHandler);
-        this.securityContextAppService = securityContextAppService;
-        this.logout = new Button("Logout");
+
         //grid fileList is configured
 
         configureLogoutHandler();
@@ -79,11 +78,11 @@ public class MainWebPage extends VerticalLayout {
         fillFileListWithFiles();
 
 
-        add( gridAndOptions, new HorizontalLayout(fileUploadComponent,logout));
+        add( gridAndOptions, new HorizontalLayout(fileUploadComponent));
     }
 
     private void configureLogoutHandler() {
-        logout.addClickListener(event->securityContextAppService.logout());
+
     }
 
     private HorizontalLayout configureFileGridAndOptionsComponent() {

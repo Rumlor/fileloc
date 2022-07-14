@@ -2,6 +2,7 @@ package com.fileloc.application.appservices.appdataservices;
 
 import com.fileloc.application.apprepo.appcontentrepopackage.FileDirectoryRepository;
 import com.fileloc.application.apprepo.appcontentrepopackage.FileRepository;
+import com.fileloc.application.appservices.securityservices.SecurityContextAppService;
 import com.fileloc.application.domain.components.Directory;
 import com.fileloc.application.domain.content.FileDirectory;
 import com.fileloc.application.domain.content.FileEntity;
@@ -23,6 +24,8 @@ public class FileSystemDataSourceRelationService
     private final FileDirectoryRepository fileDirectoryRepository;
     private final FileRepository fileRepository;
 
+    private final SecurityContextAppService securityContextAppService;
+
 
     @Override
     public void persistFileInformationToStorage(File fileToBePersisted,long fileLength) {
@@ -34,7 +37,7 @@ public class FileSystemDataSourceRelationService
 
         file.setFileLocked(false);
         file.setFileName(fileToBePersisted.getName());
-        file.setCreatedUserName("Rumlor");
+        file.setCreatedUserName(securityContextAppService.getAuthenticatedUser().getUserName());
         file.setFileDirectory(fileDirectory);
         String fileSize=null;
         var length = fileLength/1024;
@@ -73,7 +76,7 @@ public class FileSystemDataSourceRelationService
         }else {
             file.setFileLocked(false);
             file.setFileName(fileToBePersisted.getName());
-            file.setCreatedUserName("Rumlor");
+            file.setCreatedUserName(securityContextAppService.getAuthenticatedUser().getUserName());
             file.setFileDirectory(fileDirectory);
             String fileSize=null;
             var length = fileLength/1024;
