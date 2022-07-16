@@ -21,7 +21,7 @@ public class AppUser extends ApplicationBaseEntity {
 
     private CompositePassword userCompositePassword;
 
-    @ManyToMany(cascade = CascadeType.PERSIST,fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.PERSIST,fetch = FetchType.LAZY)
     @JoinTable(name = "user_to_role_link_table",
     joinColumns = @JoinColumn(name = "user_id"),
     inverseJoinColumns = @JoinColumn(name = "role_id"))

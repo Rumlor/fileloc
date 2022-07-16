@@ -24,7 +24,7 @@ public class AppSecurityUserDetailsService implements UserDetailsService {
         Supplier<UsernameNotFoundException> exceptionSupplier =
                  () -> new UsernameNotFoundException(String.format("Username %s not found",username));
 
-        appUser =  appUserRepository.findAppUserByUserName(username).orElseThrow(exceptionSupplier);
+        appUser =  appUserRepository.findAppUserWithAllAssociatedRolesByUserName(username).orElseThrow(exceptionSupplier);
 
         return new AppSecurityDelegationUser(appUser);
     }
